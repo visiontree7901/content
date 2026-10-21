@@ -1,0 +1,12 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# 화면 주소(/production, /course 등)를 새로고침해도 앱이 열리도록
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
