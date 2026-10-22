@@ -22,6 +22,7 @@ export async function createMockClient() {
   function canWrite(table, row, op) {
     if (!session) return false;
     if (table === 'subjects' || table === 'productions') return op === 'insert' || isYearOpen(row.year);
+    if (table === 'session_plan' && op === 'insert') return true;
     if (table === 'subject_private') return true;
     return isYearOpen(prodYear(row.production_id));
   }
