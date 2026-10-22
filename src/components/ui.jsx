@@ -2,7 +2,7 @@
 import { useEffect, useRef } from 'react';
 import { C, EVAL_STYLE, INSTITUTES } from '../lib/constants.js';
 
-export const STATUS_SWATCH = { 신규촬영: '#1F4FBF', '일부 수정': '#C2570C', 재사용: '#8B95A3' };
+export const STATUS_SWATCH = { 신규촬영: '#1F4FBF', '일부 수정': '#C2570C', 재사용: '#8B95A3', '타기관 임대': '#7A4FB5' };
 
 const ICONS = {
   prev: <path d="M15 18l-6-6 6-6" />,
@@ -66,7 +66,7 @@ export function EvalChip({ type, swatch = false }) {
   );
 }
 
-/** 제작 상태(신규촬영/일부 수정/재사용) 칩 */
+/** 제작 상태(신규촬영/일부 수정/재사용/타기관 임대) 칩 */
 export function StatusChip({ status }) {
   return (
     <span style={{ fontSize: 12, fontWeight: 600, padding: '3px 8px', borderRadius: 4, color: C.ink, border: `1.5px solid ${STATUS_SWATCH[status] || C.line2}`, whiteSpace: 'nowrap', background: '#fff' }}>

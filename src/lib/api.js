@@ -29,20 +29,21 @@ export async function loadYear(year, team) {
   const pids = productions.map((p) => p.id);
   const sids = subjects.map((s) => s.id);
   if (!pids.length) {
-    return { year, subjects, productions, privates: [], status: [], plan: [], checks: [], notes: [], logs: [] };
+    return { year, subjects, productions, privates: [], status: [], plan: [], checks: [], receipts: [], notes: [], logs: [] };
   }
   const byP = (t) => fetchAll(() => sb.from(t).select('*').in('production_id', pids).order('production_id'));
-  const [status, plan, checks, notes, logs, privates] = await Promise.all([
+  const [status, plan, checks, receipts, notes, logs, privates] = await Promise.all([
     byP('session_status'),
     byP('session_plan'),
     byP('stage_checks'),
+    byP('material_receipts'),
     byP('notes'),
     byP('work_logs'),
     team && sids.length
       ? fetchAll(() => sb.from('subject_private').select('*').in('subject_id', sids).order('subject_id'))
       : Promise.resolve([]),
   ]);
-  return { year, subjects, productions, privates, status, plan, checks, notes, logs };
+  return { year, subjects, productions, privates, status, plan, checks, receipts, notes, logs };
 }
 
 /** 과목 정보 칸(subjects 표) */
@@ -140,6 +141,14 @@ export async function setCheck(productionId, item, checked) {
   const sb = await getClient();
   check(await sb.from('stage_checks').upsert({
     production_id: productionId, item, checked, checked_at: checked ? new Date().toISOString() : null,
+  }, { onConflict: 'production_id,item' }));
+}
+
+/** 타기관 임대 자료 수신 체크(받은 날짜는 체크한 시각) */
+export async function setReceipt(productionId, item, received) {
+  const sb = await getClient();
+  check(await sb.from('material_receipts').upsert({
+    production_id: productionId, item, received, received_at: received ? new Date().toISOString() : null,
   }, { onConflict: 'production_id,item' }));
 }
 

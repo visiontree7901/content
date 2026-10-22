@@ -11,6 +11,7 @@ import NotesCard from './course/NotesCard.jsx';
 import LogCard from './course/LogCard.jsx';
 import StageChecks from './course/StageChecks.jsx';
 import SessionMatrix from './course/SessionMatrix.jsx';
+import ReceiptChecks from './course/ReceiptChecks.jsx';
 import { PAGE_CSS } from './course/styles.js';
 
 function Tag({ children, style }) {
@@ -78,7 +79,9 @@ export default function CoursePage() {
         <NotesCard key={`wm-${p?.id}`} p={p} kind="작업메모" canEdit={canEdit} run={run} />
       </div>
 
-      {p ? (
+      {p && p.kind === '타기관 임대' ? (
+        <ReceiptChecks p={p} canEdit={canEdit} run={run} />
+      ) : p ? (
         <>
           <StageChecks p={p} canEdit={canEdit} run={run} />
           <SessionMatrix key={p.id} subject={subject} p={p} canEdit={canEdit} run={run} />

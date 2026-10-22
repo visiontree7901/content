@@ -32,7 +32,7 @@ export function validateRow(cells) {
   const statusText = str(cells['제작 상태']);
   const prodStatus = STATUS_IN[statusText.replace(/\s/g, '')] || null;
   if (!statusText) errors.push('제작 상태가 비어 있어요');
-  else if (!prodStatus) errors.push('제작 상태 값이 맞지 않아요(신규촬영·일부 수정·재사용)');
+  else if (!prodStatus) errors.push('제작 상태 값이 맞지 않아요(신규촬영·일부 수정·재사용·타기관 임대)');
 
   const sesText = str(cells['총 차시']);
   const total = Number(sesText);

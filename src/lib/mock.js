@@ -8,10 +8,10 @@ export async function createMockClient() {
   const fx = Object.values(fixtures)[0]?.default;
   if (!fx) throw new Error('src/dev/fixture.json 이 없습니다');
   const db = structuredClone(fx);
-  for (const t of ['subjects', 'productions', 'subject_private', 'session_plan', 'session_status', 'work_logs', 'stage_checks', 'notes']) db[t] ||= [];
+  for (const t of ['subjects', 'productions', 'subject_private', 'session_plan', 'session_status', 'work_logs', 'stage_checks', 'material_receipts', 'notes']) db[t] ||= [];
   const seq = {};
   const nextId = (t) => { seq[t] = (seq[t] ?? Math.max(0, ...db[t].map((r) => r.id || 0))) + 1; return seq[t]; };
-  const keys = { subject_private: ['subject_id'], session_plan: ['production_id', 'session_no'], session_status: ['production_id', 'session_no', 'stage'], stage_checks: ['production_id', 'item'] };
+  const keys = { subject_private: ['subject_id'], session_plan: ['production_id', 'session_no'], session_status: ['production_id', 'session_no', 'stage'], stage_checks: ['production_id', 'item'], material_receipts: ['production_id', 'item'] };
   let session = null;
   try { if (sessionStorage.getItem('mock-session')) session = { user: { email: 'team' } }; } catch { /* 무시 */ }
   const listeners = new Set();

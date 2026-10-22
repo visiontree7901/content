@@ -2,11 +2,11 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { C, PART_COLORS } from '../../lib/constants.js';
-import { isDone, stageProgress } from '../../lib/model.js';
+import { isDone, receiptProgress, stageProgress } from '../../lib/model.js';
 import { courseUrl } from '../../lib/nav.js';
 import { EvalChip, Icon, SharedTag, StatusChip } from '../../components/ui.jsx';
 
-const STATUS_ORDER = { 신규촬영: 0, '일부 수정': 1, 재사용: 2 };
+const STATUS_ORDER = { 신규촬영: 0, '일부 수정': 1, 재사용: 2, '타기관 임대': 3 };
 const collator = new Intl.Collator('ko', { numeric: true });
 
 /** 일부 수정 과목의 공정별 진행(지정된 차시 기준) */
@@ -22,6 +22,7 @@ function partBars(p) {
 function progressValue(s) {
   const p = s.production;
   if (!p || s.prod_status === '재사용') return -1;
+  if (s.prod_status === '타기관 임대') { const r = receiptProgress(p); return r.done / r.total; }
   if (s.prod_status === '일부 수정') {
     const bars = partBars(p);
     const t = bars.reduce((a, b) => a + b.total, 0);
@@ -50,6 +51,10 @@ function Bar({ label, done, total, color, labelWidth }) {
 
 function Progress({ s }) {
   const p = s.production;
+  if (s.prod_status === '타기관 임대' && p) {
+    const r = receiptProgress(p);
+    return <Bar label="자료 수신" done={r.done} total={r.total} color="#7A4FB5" labelWidth={52} />;
+  }
   if (s.prod_status === '재사용' || !p) return <span style={{ fontSize: 12, color: C.subtle }}>{s.prod_status === '신규촬영' ? '제작현황 등록 필요' : '—'}</span>;
   if (s.prod_status === '일부 수정') {
     if (!Object.keys(p.plan || {}).length) return <span style={{ fontSize: 12, color: '#8A3806' }}>수정 차시 미지정</span>;

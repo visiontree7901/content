@@ -1,5 +1,5 @@
 // DB에서 받은 표들을 화면에서 쓰기 좋은 모양으로 묶음
-import { DEFAULT_SESSIONS, NEW_STAGES, PART_STAGES, PROD_RANK } from './constants.js';
+import { DEFAULT_SESSIONS, NEW_STAGES, PART_STAGES, PROD_RANK, RECEIPT_ITEMS } from './constants.js';
 
 const collator = new Intl.Collator('ko');
 export const byName = (a, b) => collator.compare(a.name, b.name);
@@ -16,7 +16,7 @@ export const byName = (a, b) => collator.compare(a.name, b.name);
  * }
  * subject = DB 행 + { priv, production, shared: 'V'|'K'|null (다른 교육원 공통 여부), partner }
  * production = DB 행 + {
- *   subjects: [subject], kind: '신규촬영'|'일부 수정'|'재사용',
+ *   subjects: [subject], kind: '신규촬영'|'일부 수정'|'재사용'|'타기관 임대',
  *   status: { [stage]: Set(session_no) }   // 완료된 차시
  *   plan: { [session_no]: '재촬영'|'재편집' },
  *   checks: { [item]: boolean },
@@ -34,6 +34,7 @@ export function buildModel(raw) {
       status: {},
       plan: {},
       checks: {},
+      receipts: {},   // 타기관 임대: { 자료: received_at(ISO) | null(받음, 날짜 없음) } — 받은 것만
       notes: [],
       logs: [],
     });
@@ -68,6 +69,10 @@ export function buildModel(raw) {
     const p = productions.get(r.production_id);
     if (p) p.plan[r.session_no] = r.method;
   }
+  for (const r of raw.receipts || []) {
+    const p = productions.get(r.production_id);
+    if (p && r.received) p.receipts[r.item] = r.received_at || null;
+  }
   for (const r of raw.checks || []) {
     const p = productions.get(r.production_id);
     if (p) p.checks[r.item] = !!r.checked;
@@ -88,7 +93,13 @@ export function buildModel(raw) {
   };
 }
 
-/** 공정 목록: 신규촬영 → 6개, 일부 수정 → 3개, 재사용 → [] */
+/** 타기관 임대: 받은 자료 수 */
+export function receiptProgress(p) {
+  const done = RECEIPT_ITEMS.filter((it) => it in (p?.receipts || {})).length;
+  return { done, total: RECEIPT_ITEMS.length };
+}
+
+/** 공정 목록: 신규촬영 → 6개, 일부 수정 → 3개, 재사용·타기관 임대 → [] */
 export function stagesOf(p) {
   if (!p) return [];
   if (p.kind === '신규촬영') return NEW_STAGES;

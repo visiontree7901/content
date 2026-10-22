@@ -12,13 +12,14 @@ import UploadPanel from './main/UploadPanel.jsx';
 
 const CSS = `
 .mp-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.mp-cards.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .mp-card { text-align: left; font-family: inherit; color: inherit; cursor: pointer; background: #fff; border-radius: 10px; padding: 16px 20px; display: flex; flex-direction: column; gap: 6px; border: 1px solid #E2E5EA; min-width: 0; }
 .mp-card[aria-pressed="true"] { border: 2px solid #15181D; padding: 15px 19px; }
 .mp-card:hover { border-color: #A9B1BD; }
 .mp-card[aria-pressed="true"]:hover { border-color: #15181D; }
 .mp-num { font-size: 32px; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
 @media (max-width: 720px) {
-  .mp-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .mp-cards, .mp-cards.four { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
   .mp-card { padding: 12px 14px; }
   .mp-card[aria-pressed="true"] { padding: 11px 13px; }
   .mp-num { font-size: 26px; }
@@ -27,7 +28,7 @@ const CSS = `
 }
 `;
 
-const TITLES = { all: '전체 평가 과목', 신규: '신규 평가 과목', 재평가: '재평가 과목', 신규촬영: '신규촬영 과목', '일부 수정': '일부 수정 과목', 재사용: '재사용 과목' };
+const TITLES = { all: '전체 평가 과목', 신규: '신규 평가 과목', 재평가: '재평가 과목', 신규촬영: '신규촬영 과목', '일부 수정': '일부 수정 과목', 재사용: '재사용 과목', '타기관 임대': '타기관 임대 과목' };
 const TESTS = {
   all: () => true,
   신규: (s) => s.eval_type === '신규',
@@ -35,6 +36,7 @@ const TESTS = {
   신규촬영: (s) => s.prod_status === '신규촬영',
   '일부 수정': (s) => s.prod_status === '일부 수정',
   재사용: (s) => s.prod_status === '재사용',
+  '타기관 임대': (s) => s.prod_status === '타기관 임대',
 };
 
 const toolBtn = { height: 44, padding: '0 16px', border: `1px solid ${C.line2}`, background: '#fff', borderRadius: 8, fontFamily: 'inherit', fontSize: 14, color: C.ink, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' };
@@ -228,8 +230,8 @@ export default function MainPage() {
               <SummaryCard id="신규" label="신규" value={n.신규} sub="기본 최대 15과목 (+ 재평가 포기 수)" swatch={EVAL_STYLE.신규.swatch} filter={filter} setFilter={setFilter} />
               <SummaryCard id="재평가" label="재평가" value={n.재평가} sub="3년 사용 만료 과목" swatch={EVAL_STYLE.재평가.swatch} filter={filter} setFilter={setFilter} />
             </div>
-            <div className="mp-cards">
-              {['신규촬영', '일부 수정', '재사용'].map((st) => (
+            <div className="mp-cards four">
+              {['신규촬영', '일부 수정', '재사용', '타기관 임대'].map((st) => (
                 <SummaryCard key={st} id={st} label={st} value={n[st]} sub={split(st)} swatch={STATUS_SWATCH[st]} filter={filter} setFilter={setFilter} />
               ))}
             </div>

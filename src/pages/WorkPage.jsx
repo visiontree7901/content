@@ -98,7 +98,7 @@ export default function WorkPage() {
 
   const urlNote = urlNotListed && (
     <div role="note" style={{ fontSize: 13, color: C.muted, background: '#F4F5F7', border: `1px solid ${C.line}`, borderRadius: 8, padding: '8px 12px' }}>
-      {urlSubject.name}은(는) {urlSubject.production?.kind === '재사용' ? '재사용 과목이라' : '이 목록에 없어'} 입력할 작업이 없어요.
+      {urlSubject.name}은(는) {urlSubject.production?.kind === '재사용' ? '재사용 과목이라' : urlSubject.production?.kind === '타기관 임대' ? '타기관 임대 과목이라(받은 자료는 과목 상세에서 체크)' : '이 목록에 없어'} 입력할 작업이 없어요.
     </div>
   );
 
