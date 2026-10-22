@@ -46,3 +46,8 @@
 ## 주소
 - `/` 기관별 현황(`?inst=K` 건국 탭) · `/production` 통합 제작현황 · `/course?subject=ID` 과목 상세 · `/work?subject=ID` 작업 입력
 - 과목은 이름이 아니라 subject id로 구분(같은 이름 과목이 여러 개일 수 있음)
+
+## 미리보기(Claude 아티팩트)
+- `npm run build:artifact` → `dist-artifact/` (시험용 데이터 `src/dev/fixture-preview.json` 내장, 비공개 칸은 비워 둠, # 주소 방식, 팀 로그인 상태로 시작, 비밀번호 test)
+- 아티팩트로 올릴 때는 index.html의 doctype/html/head/body 껍데기를 빼고, assets/*.js·css·favicon.svg를 같이 올림. exceljs 파일의 U+FFFD 문자는 `�`로 바꿔야 올라감
+- 반영 순서: 수정 → 아티팩트로 미리 확인 → 팀장 "반영해줘" → main에 push(Netlify 배포 1번 = 15 크레딧)

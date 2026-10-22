@@ -52,6 +52,7 @@ export default function CoursePage() {
     if (first) go(first.id);
   };
   const p = subject.production;
+  const leased = p?.kind === '타기관 임대';
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20, minWidth: 0 }}>
@@ -72,16 +73,22 @@ export default function CoursePage() {
         </div>
       </div>
 
-      <div className="crs-grid" style={{ alignItems: 'stretch' }}>
-        <InfoCard subject={subject} />
-        <NotesCard key={`ct-${p?.id}`} p={p} kind="교수소통" canEdit={canEdit} run={run} />
-        <LogCard p={p} />
-        <NotesCard key={`wm-${p?.id}`} p={p} kind="작업메모" canEdit={canEdit} run={run} />
-      </div>
+      {leased ? (
+        // 타기관 임대: 작업 입력이 없으므로 과목 정보 + 자료 수신 여부만
+        <div className="crs-grid" style={{ alignItems: 'stretch' }}>
+          <InfoCard subject={subject} />
+          <ReceiptChecks p={p} canEdit={canEdit} run={run} compact />
+        </div>
+      ) : (
+        <div className="crs-grid" style={{ alignItems: 'stretch' }}>
+          <InfoCard subject={subject} />
+          <NotesCard key={`ct-${p?.id}`} p={p} kind="교수소통" canEdit={canEdit} run={run} />
+          <LogCard p={p} />
+          <NotesCard key={`wm-${p?.id}`} p={p} kind="작업메모" canEdit={canEdit} run={run} />
+        </div>
+      )}
 
-      {p && p.kind === '타기관 임대' ? (
-        <ReceiptChecks p={p} canEdit={canEdit} run={run} />
-      ) : p ? (
+      {leased ? null : p ? (
         <>
           <StageChecks p={p} canEdit={canEdit} run={run} />
           <SessionMatrix key={p.id} subject={subject} p={p} canEdit={canEdit} run={run} />

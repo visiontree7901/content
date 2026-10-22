@@ -7,11 +7,14 @@ export const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_yWIoSt-4j0rmqNiBisvF7A_G
 // 팀 공용 계정 — 로그인 화면에서는 비밀번호만 입력
 export const TEAM_EMAIL = 'visiontree7901+content@gmail.com';
 
+// 미리보기 빌드(Claude 아티팩트, npm run build:artifact)는 항상 시험용 데이터로 동작
+export const IS_PREVIEW = import.meta.env.VITE_PREVIEW === '1';
+
 // 개발 중 점검용: 주소에 ?mock=1 을 붙이면 가짜 데이터로 동작(배포본에는 가짜 데이터가 포함되지 않음)
 let client = null;
 export async function getClient() {
   if (client) return client;
-  if (import.meta.env.DEV && new URLSearchParams(location.search).has('mock')) {
+  if (IS_PREVIEW || (import.meta.env.DEV && new URLSearchParams(location.search).has('mock'))) {
     const { createMockClient } = await import('./mock.js');
     client = await createMockClient();
   } else {

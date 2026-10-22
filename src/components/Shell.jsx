@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useApp } from '../lib/AppContext.jsx';
-import { teamLogin, teamLogout } from '../lib/supabase.js';
+import { IS_PREVIEW, teamLogin, teamLogout } from '../lib/supabase.js';
 import { currentYear } from '../lib/year.js';
 import { C } from '../lib/constants.js';
 import { Icon, inputStyle } from './ui.jsx';
@@ -78,6 +78,11 @@ export default function Shell({ children }) {
   });
   return (
     <div style={{ fontFamily: "'IBM Plex Sans KR', system-ui, sans-serif", color: C.ink, background: C.bg, minHeight: '100vh' }}>
+      {IS_PREVIEW && (
+        <div role="note" style={{ background: '#FFF4D6', color: '#6B4A00', fontSize: 13, padding: '8px 16px', textAlign: 'center', lineHeight: 1.5 }}>
+          <strong>미리보기</strong> · 시험용 데이터라 눌러도 실제 사이트에는 남지 않아요(새로고침하면 처음 상태) · 팀 비밀번호는 <strong>test</strong>
+        </div>
+      )}
       <header style={{ background: '#15181D', color: '#fff' }}>
         <div className="shell-bar" style={{ maxWidth: 1360, margin: '0 auto', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '12px 28px' }}>
           <div style={{ fontWeight: 700, fontSize: 17, letterSpacing: -0.2 }}>평가인정 과목 관리</div>

@@ -2,17 +2,22 @@
 // 화면에서 쓰는 쿼리 모양만 흉내냄: select/eq/in/is/order/range, insert/update/delete/upsert, rpc('save_work')
 import { isYearOpen } from './year.js';
 
-const fixtures = import.meta.glob('../dev/fixture.json', { eager: true });
+const PREVIEW = import.meta.env.VITE_PREVIEW === '1';
+// 미리보기 빌드에는 비공개 정보를 뺀 fixture-preview.json 만 들어가도록 나눠서 불러옴
+const loadFixture = PREVIEW
+  ? Object.values(import.meta.glob('../dev/fixture-preview.json'))[0]
+  : Object.values(import.meta.glob('../dev/fixture.json'))[0];
 
 export async function createMockClient() {
-  const fx = Object.values(fixtures)[0]?.default;
+  const fx = loadFixture ? (await loadFixture()).default : null;
   if (!fx) throw new Error('src/dev/fixture.json 이 없습니다');
   const db = structuredClone(fx);
   for (const t of ['subjects', 'productions', 'subject_private', 'session_plan', 'session_status', 'work_logs', 'stage_checks', 'material_receipts', 'notes']) db[t] ||= [];
   const seq = {};
   const nextId = (t) => { seq[t] = (seq[t] ?? Math.max(0, ...db[t].map((r) => r.id || 0))) + 1; return seq[t]; };
   const keys = { subject_private: ['subject_id'], session_plan: ['production_id', 'session_no'], session_status: ['production_id', 'session_no', 'stage'], stage_checks: ['production_id', 'item'], material_receipts: ['production_id', 'item'] };
-  let session = null;
+  // 미리보기는 바로 써 볼 수 있게 팀 로그인 상태로 시작
+  let session = PREVIEW ? { user: { email: 'team' } } : null;
   try { if (sessionStorage.getItem('mock-session')) session = { user: { email: 'team' } }; } catch { /* 무시 */ }
   const listeners = new Set();
   const now = () => new Date().toISOString();

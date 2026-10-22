@@ -4,11 +4,11 @@ import { C, RECEIPT_ITEMS } from '../../lib/constants.js';
 import { fmtDate, receiptProgress } from '../../lib/model.js';
 import * as api from '../../lib/api.js';
 import { Icon } from '../../components/ui.jsx';
-import { sectionBox, h2Style } from './styles.js';
+import { sectionBox, card360, h2Style } from './styles.js';
 
 const LEASE = '#7A4FB5';
 
-export default function ReceiptChecks({ p, canEdit, run }) {
+export default function ReceiptChecks({ p, canEdit, run, compact = false }) {
   const [busy, setBusy] = useState(null);
   const { done, total } = receiptProgress(p);
   const pct = Math.round((done / total) * 100);
@@ -20,13 +20,13 @@ export default function ReceiptChecks({ p, canEdit, run }) {
     try { await run(() => api.setReceipt(p.id, item, !on), on ? '수신 체크를 풀었어요' : '받음으로 표시했어요'); } catch { /* 알림은 run이 띄움 */ } finally { setBusy(null); }
   };
   return (
-    <section aria-labelledby="rc-h" style={sectionBox}>
+    <section aria-labelledby="rc-h" style={compact ? { ...card360, height: 'auto', minHeight: 360 } : sectionBox}>
       <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '8px 12px' }}>
         <h2 id="rc-h" style={h2Style}>자료 수신 여부</h2>
         <span style={{ fontSize: 13, color: C.muted }}>
-          타기관 임대 과목{owners ? ` (${owners})` : ''}이라 제작 진행 대신 받은 자료만 체크해요
+          {compact ? `타기관 임대${owners ? ` · ${owners}` : ''}` : `타기관 임대 과목${owners ? ` (${owners})` : ''}이라 제작 진행 대신 받은 자료만 체크해요`}
         </span>
-        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 10, minWidth: 200 }}>
+        <div style={{ marginLeft: compact ? 0 : 'auto', flex: compact ? '1 1 100%' : undefined, display: 'flex', alignItems: 'center', gap: 10, minWidth: 200 }}>
           <div role="img" aria-label={`자료 ${total}개 중 ${done}개 받음`} style={{ flex: 1, height: 8, background: '#EEE8F6', borderRadius: 4, overflow: 'hidden' }}>
             <div style={{ width: `${pct}%`, height: 8, background: LEASE }} />
           </div>
@@ -35,7 +35,7 @@ export default function ReceiptChecks({ p, canEdit, run }) {
           </span>
         </div>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(190px, 100%), 1fr))', gap: 8 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(auto-fill, minmax(min(${compact ? 150 : 190}px, 100%), 1fr))`, gap: 8 }}>
         {RECEIPT_ITEMS.map((item) => {
           const on = item in p.receipts;
           const when = p.receipts[item];
